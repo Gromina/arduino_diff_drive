@@ -13,7 +13,7 @@ The package transaltes commands and info to/from ROS topics
 Commands
 --------
 
-STATUS: report current motors power, opto counters
-SET: set motors power
-RESET: stop motors, reset opto counters
+* STATUS: report current motors power, opto counters
+* SET: set motors power
+* RESET: stop motors, reset opto counters
 
