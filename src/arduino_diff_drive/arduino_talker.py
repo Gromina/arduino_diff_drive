@@ -1,27 +1,29 @@
 #!/usr/bin/env python
-# license removed for brevity
-import rospy
-from std_msgs.msg import String
+
 
 from twisted.internet import protocol, reactor
 from twisted.internet.serialport import SerialPort
 from twisted.protocols import basic
 from twisted.internet import stdio
-from twisted.protocols import basic
 from twisted.internet import task
+
+import rospy
+from std_msgs.msg import String
 
 glob_stat=""
 rospy.init_node('arduino_talker', anonymous=True)
 pub = rospy.Publisher('arduino_status', String, queue_size=10)
 
+# periodically publish status to ROS topic
 def timerTask():
-	global glob_stat
-	try:
-		str = glob_stat
-		rospy.loginfo(str)
-		pub.publish(str)
-	except rospy.ROSInterruptException: pass
+  global glob_stat
+  try:
+    str = glob_stat
+    rospy.loginfo(str)
+    pub.publish(str)
+  except rospy.ROSInterruptException: pass
 
+# Handling data exchange with Arduino by serial
 class Echo(basic.LineReceiver):
     from os import linesep as delimiter
 
@@ -52,16 +54,12 @@ class DeviceBluetooth(basic.LineReceiver):
         print 'Connection made!'
 
     def lineReceived(self, data):
-	global glob_stat
+        global glob_stat
         print "Response: {0}".format(data)
-	glob_stat = data
+        glob_stat = data
 
 
 def start():
-  return 0
-
-
-if __name__ == '__main__':
     from twisted.internet import reactor
     arduino = DeviceBluetooth()
     std_io = Echo(arduino)
@@ -71,4 +69,10 @@ if __name__ == '__main__':
     l.start(1)
 
     reactor.run()
+# will search for 1st arduino by something like this:
+#import glob
+# glob.glob("/dev/tty.usbserial-*"[0])
+
+if __name__ == '__main__':
+    start()
 
